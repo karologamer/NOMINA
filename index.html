@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOMINA²⁴/²⁵</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-image: url('https://i.ibb.co/2Fh85Yq/1727275510636.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #333;
+            margin-top: 0;
+        }
+
+        /* Removed .header-image-container */
+
+        .header-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .main-title {
+            color: white;
+            text-align: center;
+            font-size: 3rem;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background-color: white;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .result-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .total {
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+
+        .whatsapp-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background-color: #25D366;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 2rem;
+            transition: background-color 0.2s;
+        }
+
+        .whatsapp-button:hover {
+            background-color: #128C7E;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="main-title">NOMINA²⁴`²⁵</h1>
+
+    <div class="container">
+        <div class="card">
+            <div class="form-group">
+                <label for="grupo">Grupo Profesional</label>
+                <select id="grupo" onchange="actualizarPuestos()">
+                    <option value="">Selecciona un grupo</option>
+                    <option value="gestion">Gestión y dirección</option>
+                    <option value="administrativo">Administrativo e Informático</option>
+                    <option value="asistencial">Asistencial</option>
+                    <option value="explotacion">Explotación</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="puesto">Puesto de Trabajo</label>
+                <select id="puesto" onchange="calcularSalario()">
+                    <option value="">Selecciona un puesto</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('datos-basicos')">Datos Básicos</button>
+            <button class="tab" onclick="openTab('extras')">Extras y Festividades</button>
+        </div>
+
+        <div id="datos-basicos" class="tab-content card active">
+            <div class="form-group">
+                <label for="antiguedad">Antigüedad (años)</label>
+                <input type="number" id="antiguedad" min="0" value="0" onchange="calcularSalario()">
+            </div>
+            <div class="form-group">
+                <label for="edad">Edad</label>
+                <input type="number" id="edad" min="0" max="100" value="0" onchange="calcularSalario()">
+            </div>
+        </div>
+
+        <div id="extras" class="tab-content card">
+            <div class="form-group">
+                <label for="horasExtras">Horas Extras (minutos)</label>
+                <input type="number" id="horasExtras" min="0" value="0" onchange="calcularSalario()">
+            </div>
+            <div class="form-group">
+                <label for="horasNocturnas">Horas Nocturnas (minutos)</label>
+                <input type="number" id="horasNocturnas" min="0" value="0" onchange="calcularSalario()">
+            </div>
+            <div class="form-group">
+                <label for="diasNavidad">Días Festivos Navidad</label>
+                <input type="number" id="diasNavidad" min="0" value="0" onchange="calcularSalario()">
+            </div>
+            <div class="form-group">
+                <label for="diasSemanaSanta">Días Festivos Semana Santa</label>
+                <input type="number" id="diasSemanaSanta" min="0" value="0" onchange="calcularSalario()">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 1rem;">Desglose del Salario</h2>
+            <div id="resultados">
+                <div class="result-item">Salario Base: 0.00 €</div>
+                <div class="result-item">Plus Convenio: 200.01 €</div>
+                <div class="result-item">Plus Transporte: 99.88 €</div>
+                <div class="result-item">Antigüedad (0%): 0.00 €</div>
+                <div class="result-item">Gratificación por Fidelidad: 0.00 €</div>
+                <div class="result-item">Extras por Horas Extras: 0.00 €</div>
+                <div class="result-item">Extras por Horas Nocturnas: 0.00 €</div>
+                <div class="result-item">Extras por Festividades: 0.00 €</div>
+                <div class="total">Total a Pagar: 299.89 €</div>
+            </div>
+        </div>
+
+        <a href="https://whatsapp.com/channel/0029Vb3xmeq3mFXzDc4jfk2D" class="whatsapp-button" target="_blank">
+            CANALES
+        </a>
+    </div>
+
+    <script>
+        const puestosTrabajo = {
+            gestion: [
+                { nombre: "Director/a área", salario: 2517.18 },
+                { nombre: "Diplomado/a", salario: 2139.76 },
+                { nombre: "Técnico superior", salario: 2317.06 },
+                { nombre: "Técnico medio", salario: 2139.76 },
+                { nombre: "Jefe/a de equipo", salario: 1679.20 },
+                { nombre: "Jefe/a de tráfico", salario: 1805.85 },
+                { nombre: "Jefe/a de taller", salario: 1741.98 }
+            ],
+            administrativo: [
+                { nombre: "Oficial administrativo", salario: 1771.35 },
+                { nombre: "Auxiliar administrativo", salario: 1552.61 },
+                { nombre: "Coordinador/a / operador/a de respuesta", salario: 1624.90 },
+                { nombre: "Teleoperador/a / operador/a de demanda", salario: 1564.05 },
+                { nombre: "Ordenanza", salario: 1050.79 },
+                { nombre: "Analista de proceso de datos", salario: 2139.76 },
+                { nombre: "Programador/a", salario: 1771.35 },
+                { nombre: "Operador/a", salario: 1564.05 }
+            ],
+            asistencial: [
+                { nombre: "Médico/a", salario: 2738.43 },
+                { nombre: "DUE (antes ATS)", salario: 2139.76 },
+                { nombre: "TES conductor/a", salario: 1705.40 },
+                { nombre: "TES ayudante conductor/a y camillero/a", salario: 1526.38 },
+                { nombre: "TES camillero/a", salario: 1453.11 }
+            ],
+            explotacion: [
+                { nombre: "Mecánico", salario: 1649.34 },
+                { nombre: "Ayudante mecánico", salario: 1494.93 },
+                { nombre: "Chapista", salario: 1598.63 },
+                { nombre: "Pintor/a", salario: 1598.63 },
+                { nombre: "Personal limpieza", salario: 1050.79 },
+                { nombre: "Personal mantenimiento", salario: 1050.79 }
+            ]
+        };
+
+        function actualizarPuestos() {
+            const grupoSelect = document.getElementById('grupo');
+            const puestoSelect = document.getElementById('puesto');
+            const grupo = grupoSelect.value;
+            
+            // Limpiar opciones actuales
+            puestoSelect.innerHTML = '<option value="">Selecciona un puesto</option>';
+            
+            if (grupo && puestosTrabajo[grupo]) {
+                puestosTrabajo[grupo].forEach(puesto => {
+                    const option = document.createElement('option');
+                    option.value = puesto.salario;
+                    option.textContent = puesto.nombre;
+                    puestoSelect.appendChild(option);
+                });
+            }
+            
+            calcularSalario();
+        }
+
+        function openTab(tabName) {
+            const tabs = document.getElementsByClassName('tab');
+            const tabContents = document.getElementsByClassName('tab-content');
+            
+            for (let tab of tabs) {
+                tab.classList.remove('active');
+            }
+            for (let content of tabContents) {
+                content.classList.remove('active');
+            }
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function calcularSalario() {
+            const salarioBase = parseFloat(document.getElementById('puesto').value) || 0;
+            const antiguedad = parseInt(document.getElementById('antiguedad').value) || 0;
+            const edad = parseInt(document.getElementById('edad').value) || 0;
+            const horasExtras = parseInt(document.getElementById('horasExtras').value) || 0;
+            const horasNocturnas = parseInt(document.getElementById('horasNocturnas').value) || 0;
+            const diasNavidad = parseInt(document.getElementById('diasNavidad').value) || 0;
+            const diasSemanaSanta = parseInt(document.getElementById('diasSemanaSanta').value) || 0;
+
+            // Cálculo de antigüedad
+            const porcentajeAntiguedad = antiguedad <= 2 ? 0 : Math.min(antiguedad, 20);
+            const complementoAntiguedad = salarioBase * (porcentajeAntiguedad / 100);
+
+            // Cálculo de gratificación por fidelidad
+            let gratificacionFidelidad = 0;
+            if (edad >= 60) {
+                if (antiguedad >= 25) gratificacionFidelidad = 32.31;
+                else if (antiguedad >= 20) gratificacionFidelidad = 27.61;
+                else if (antiguedad >= 15) gratificacionFidelidad = 23.57;
+                else if (antiguedad >= 10) gratificacionFidelidad = 7.40;
+            }
+
+            // Cálculo de horas extras
+            const salarioConAntiguedad = salarioBase * (1 + (porcentajeAntiguedad / 100));
+            const baseParaExtras = salarioConAntiguedad + 200.01 + 99.88;
+            const valorMinutoExtra = (((baseParaExtras * 15) / 1776) / 60) * 1.75;
+            const extrasPorHorasExtras = valorMinutoExtra * horasExtras;
+
+            // Cálculo de nocturnidad
+            const valorMinutoNocturno = (((baseParaExtras * 15) / 1776) / 60) * 0.10;
+            const extrasPorHorasNocturnas = valorMinutoNocturno * horasNocturnas;
+
+            // Cálculo de festividades
+            const extrasPorFestividades = (diasNavidad + diasSemanaSanta) * 41.14;
+
+            // Cálculo total
+            const total = salarioBase + complementoAntiguedad + 200.01 + 99.88 + 
+                         gratificacionFidelidad + extrasPorHorasExtras + 
+                         extrasPorHorasNocturnas + extrasPorFestividades;
+
+            // Actualizar resultados
+            document.getElementById('resultados').innerHTML = `
+                <div class="result-item">Salario Base: ${salarioBase.toFixed(2)} €</div>
+                <div class="result-item">Plus Convenio: 200.01 €</div>
+                <div class="result-item">Plus Transporte: 99.88 €</div>
+                <div class="result-item">Antigüedad (${porcentajeAntiguedad}%): ${complementoAntiguedad.toFixed(2)} €</div>
+                <div class="result-item">Gratificación por Fidelidad${edad < 60 ? " (No aplica por edad)" : ""}: ${gratificacionFidelidad.toFixed(2)} €</div>
+                <div class="result-item">Extras por Horas Extras: ${extrasPorHorasExtras.toFixed(2)} €</div>
+                <div class="result-item">Extras por Horas Nocturnas: ${extrasPorHorasNocturnas.toFixed(2)} €</div>
+                <div class="result-item">Extras por Festividades: ${extrasPorFestividades.toFixed(2)} €</div>
+                <div class="total">Total a Pagar: ${total.toFixed(2)} €</div>
+            `;
+        }
+    </script>
+</body>
+</html>
+
