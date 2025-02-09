@@ -20,24 +20,14 @@
             background-attachment: fixed;
             min-height: 100vh;
             color: #333;
-            margin-top: 0;
         }
-
-        /* Removed .header-image-container */
 
         .header-image {
             width: 100%;
-            height: 100%;
+            height: auto;
             object-fit: cover;
-            object-position: center;
-        }
-
-        .main-title {
-            color: white;
-            text-align: center;
-            font-size: 3rem;
-            margin: 1rem 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: block;
+            max-width: 100vw;
         }
 
         .container {
@@ -129,12 +119,18 @@
         .whatsapp-button:hover {
             background-color: #128C7E;
         }
+
+        .footer-info {
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 2rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-
-    <h1 class="main-title">NOMINA²⁴`²⁵</h1>
-
+    <img src="https://i.ibb.co/CqHL9sV/1000212723-11zon.jpg" alt="CCOO Header" class="header-image">
+    
     <div class="container">
         <div class="card">
             <div class="form-group">
@@ -170,6 +166,28 @@
                 <label for="edad">Edad</label>
                 <input type="number" id="edad" min="0" max="100" value="0" onchange="calcularSalario()">
             </div>
+            <div class="form-group">
+                <label for="reduccionJornada">Reducción de Jornada (horas)</label>
+                <select id="reduccionJornada" onchange="calcularSalario()">
+                    <option value="0">Sin reducción</option>
+                    <option value="1">1 hora</option>
+                    <option value="2">2 horas</option>
+                    <option value="3">3 horas</option>
+                    <option value="4">4 horas</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contratoPracticas">Contrato en Prácticas</label>
+                <select id="contratoPracticas" onchange="calcularSalario()">
+                    <option value="0">No</option>
+                    <option value="60">60%</option>
+                    <option value="75">75%</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="irpf">IRPF (%)</label>
+                <input type="number" id="irpf" min="0" max="100" value="0" onchange="calcularSalario()">
+            </div>
         </div>
 
         <div id="extras" class="tab-content card">
@@ -183,32 +201,43 @@
             </div>
             <div class="form-group">
                 <label for="diasNavidad">Días Festivos Navidad</label>
-                <input type="number" id="diasNavidad" min="0" value="0" onchange="calcularSalario()">
+                <select id="diasNavidad" onchange="calcularSalario()">
+                    <option value="0">0 días</option>
+                    <option value="1">1 día</option>
+                    <option value="2">2 días</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="diasSemanaSanta">Días Festivos Semana Santa</label>
-                <input type="number" id="diasSemanaSanta" min="0" value="0" onchange="calcularSalario()">
+                <select id="diasSemanaSanta" onchange="calcularSalario()">
+                    <option value="0">0 días</option>
+                    <option value="1">1 día</option>
+                    <option value="2">2 días</option>
+                </select>
             </div>
         </div>
 
         <div class="card">
-            <h2 style="margin-bottom: 1rem;">Desglose del Salario</h2>
+            <h2 style="margin-bottom: 1rem;">Salario</h2>
             <div id="resultados">
-                <div class="result-item">Salario Base: 0.00 €</div>
-                <div class="result-item">Plus Convenio: 200.01 €</div>
-                <div class="result-item">Plus Transporte: 99.88 €</div>
-                <div class="result-item">Antigüedad (0%): 0.00 €</div>
-                <div class="result-item">Gratificación por Fidelidad: 0.00 €</div>
-                <div class="result-item">Extras por Horas Extras: 0.00 €</div>
-                <div class="result-item">Extras por Horas Nocturnas: 0.00 €</div>
-                <div class="result-item">Extras por Festividades: 0.00 €</div>
-                <div class="total">Total a Pagar: 299.89 €</div>
+                <!-- Los resultados se insertarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 1rem;">Retenciones</h2>
+            <div id="retenciones">
+                <!-- Las retenciones se insertarán aquí dinámicamente -->
             </div>
         </div>
 
         <a href="https://whatsapp.com/channel/0029Vb3xmeq3mFXzDc4jfk2D" class="whatsapp-button" target="_blank">
             CANALES
         </a>
+        <div class="footer-info">
+            <p>App Versión 1.2</p>
+            <p>Esta APP aplica Convenio Colectivo y Estatuto del trabajador a 09-02-2025.</p>
+        </div>
     </div>
 
     <script>
@@ -292,10 +321,43 @@
             const horasNocturnas = parseInt(document.getElementById('horasNocturnas').value) || 0;
             const diasNavidad = parseInt(document.getElementById('diasNavidad').value) || 0;
             const diasSemanaSanta = parseInt(document.getElementById('diasSemanaSanta').value) || 0;
+            const reduccionJornada = parseInt(document.getElementById('reduccionJornada').value) || 0;
+            const contratoPracticas = parseInt(document.getElementById('contratoPracticas').value) || 0;
+            const irpf = parseFloat(document.getElementById('irpf').value) || 0;
+
+            // Disable extras for "Reducción de Jornada" and "Contrato en Prácticas"
+            const extrasDisabled = reduccionJornada > 0 || contratoPracticas > 0;
+            document.getElementById('horasExtras').disabled = extrasDisabled;
+            document.getElementById('horasNocturnas').disabled = contratoPracticas > 0; // Only disable horasNocturnas for contratoPracticas
+
+            // Cálculos básicos
+            let factorReduccion = 1 - (reduccionJornada / 8);
+            if (contratoPracticas > 0) {
+                factorReduccion = contratoPracticas / 100;
+            }
+            const salarioBaseReducido = salarioBase * factorReduccion;
+            const plusConvenioReducido = 200.01 * factorReduccion;
+            const plusTransporte = 99.88;
 
             // Cálculo de antigüedad
             const porcentajeAntiguedad = antiguedad <= 2 ? 0 : Math.min(antiguedad, 20);
-            const complementoAntiguedad = salarioBase * (porcentajeAntiguedad / 100);
+            const complementoAntiguedad = salarioBaseReducido * (porcentajeAntiguedad / 100);
+
+            // Nueva fórmula para horas extras
+            let extrasPorHorasExtras = 0;
+            if (!contratoPracticas && reduccionJornada === 0) {
+                const baseCalculo = ((salarioBaseReducido * (1 + porcentajeAntiguedad/100)) + plusConvenioReducido + plusTransporte);
+                const valorMinutoExtra = (((baseCalculo * 15) / 1776) * 1.75) / 60;
+                extrasPorHorasExtras = valorMinutoExtra * horasExtras;
+            }
+
+            // Nueva fórmula para horas nocturnas
+            let extrasPorHorasNocturnas = 0;
+            if (!contratoPracticas) {
+                const baseCalculo = ((salarioBaseReducido * (1 + porcentajeAntiguedad/100)) + plusConvenioReducido + plusTransporte);
+                const valorMinutoNocturno = (((baseCalculo * 15) / 1776) / 60) * 0.10;
+                extrasPorHorasNocturnas = valorMinutoNocturno * horasNocturnas;
+            }
 
             // Cálculo de gratificación por fidelidad
             let gratificacionFidelidad = 0;
@@ -306,37 +368,89 @@
                 else if (antiguedad >= 10) gratificacionFidelidad = 7.40;
             }
 
-            // Cálculo de horas extras
-            const salarioConAntiguedad = salarioBase * (1 + (porcentajeAntiguedad / 100));
-            const baseParaExtras = salarioConAntiguedad + 200.01 + 99.88;
-            const valorMinutoExtra = (((baseParaExtras * 15) / 1776) / 60) * 1.75;
-            const extrasPorHorasExtras = valorMinutoExtra * horasExtras;
-
-            // Cálculo de nocturnidad
-            const valorMinutoNocturno = (((baseParaExtras * 15) / 1776) / 60) * 0.10;
-            const extrasPorHorasNocturnas = valorMinutoNocturno * horasNocturnas;
-
             // Cálculo de festividades
             const extrasPorFestividades = (diasNavidad + diasSemanaSanta) * 41.14;
 
-            // Cálculo total
-            const total = salarioBase + complementoAntiguedad + 200.01 + 99.88 + 
-                         gratificacionFidelidad + extrasPorHorasExtras + 
-                         extrasPorHorasNocturnas + extrasPorFestividades;
+            // Cálculo total bruto
+            const totalBruto = salarioBaseReducido + complementoAntiguedad + plusConvenioReducido + plusTransporte + 
+                             gratificacionFidelidad + extrasPorHorasExtras + 
+                             extrasPorHorasNocturnas + extrasPorFestividades;
 
-            // Actualizar resultados
+            // Nueva base para el cálculo de retenciones
+            const baseRetenciones = (((((totalBruto - plusTransporte) * 3) / 12).toFixed(1) * 1) + totalBruto);
+
+            // Cálculo de retenciones con nuevos porcentajes
+            const contingenciasComunes = baseRetenciones * 0.0470;
+            const mei = baseRetenciones * 0.0013;
+            const formacion = baseRetenciones * 0.0010;
+            const desempleo = baseRetenciones * 0.0155; // Update here
+            const retencionIRPF = totalBruto * (irpf / 100);
+
+            const totalRetenciones = contingenciasComunes + mei + formacion + desempleo + retencionIRPF;
+            const totalNeto = totalBruto - totalRetenciones;
+
+            // Actualizar resultados con redondeo a dos decimales
             document.getElementById('resultados').innerHTML = `
-                <div class="result-item">Salario Base: ${salarioBase.toFixed(2)} €</div>
-                <div class="result-item">Plus Convenio: 200.01 €</div>
-                <div class="result-item">Plus Transporte: 99.88 €</div>
-                <div class="result-item">Antigüedad (${porcentajeAntiguedad}%): ${complementoAntiguedad.toFixed(2)} €</div>
+                <div class="result-item">Salario Base: ${salarioBaseReducido.toFixed(2)} €</div>
+                <div class="result-item">Plus Convenio: ${plusConvenioReducido.toFixed(2)} €</div>
+                <div class="result-item">Plus Transporte: ${plusTransporte.toFixed(2)} €</div>
+                <div class="result-item">Antigüedad (${contratoPracticas > 0 ? "0% (Contrato en Prácticas)" : porcentajeAntiguedad + "%"}): ${complementoAntiguedad.toFixed(2)} €</div>
                 <div class="result-item">Gratificación por Fidelidad${edad < 60 ? " (No aplica por edad)" : ""}: ${gratificacionFidelidad.toFixed(2)} €</div>
                 <div class="result-item">Extras por Horas Extras: ${extrasPorHorasExtras.toFixed(2)} €</div>
                 <div class="result-item">Extras por Horas Nocturnas: ${extrasPorHorasNocturnas.toFixed(2)} €</div>
                 <div class="result-item">Extras por Festividades: ${extrasPorFestividades.toFixed(2)} €</div>
-                <div class="total">Total a Pagar: ${total.toFixed(2)} €</div>
+                <div class="total">Total Bruto: ${totalBruto.toFixed(2)} €</div>
+            `;
+
+            // Actualizar retenciones con redondeo a dos decimales
+            document.getElementById('retenciones').innerHTML = `
+                <div class="result-item">Contingencias Comunes (4.70%): ${contingenciasComunes.toFixed(2)} €</div>
+                <div class="result-item">M.E.I (0.13%): ${mei.toFixed(2)} €</div>
+                <div class="result-item">Formación (0.10%): ${formacion.toFixed(2)} €</div>
+                <div class="result-item">Desempleo (1.55%): ${desempleo.toFixed(2)} €</div>  <!-- Update here -->
+                <div class="result-item">IRPF (${irpf}%): ${retencionIRPF.toFixed(2)} €</div>
+                <div class="total">Total Retenciones: ${totalRetenciones.toFixed(2)} €</div>
+                <div class="total">Total Neto: ${totalNeto.toFixed(2)} €</div>
             `;
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reduccionJornadaSelect = document.getElementById('reduccionJornada');
+            const contratoPracticasSelect = document.getElementById('contratoPracticas');
+            const horasExtrasInput = document.getElementById('horasExtras');
+            const horasNocturnasInput = document.getElementById('horasNocturnas');
+            const antiguedadInput = document.getElementById('antiguedad');
+
+            function updateExtrasFields() {
+                const reduccionJornada = parseInt(reduccionJornadaSelect.value) || 0;
+                const contratoPracticas = parseInt(contratoPracticasSelect.value) || 0;
+                const horasExtrasDisabled = reduccionJornada > 0 || contratoPracticas > 0;
+                const horasNocturnasDisabled = contratoPracticas > 0;
+
+                horasExtrasInput.disabled = horasExtrasDisabled;
+                horasNocturnasInput.disabled = horasNocturnasDisabled;
+                antiguedadInput.disabled = contratoPracticas > 0;
+
+                if (horasExtrasDisabled) {
+                    horasExtrasInput.value = 0;
+                }
+                if (horasNocturnasDisabled) {
+                    horasNocturnasInput.value = 0;
+                }
+                if (contratoPracticas > 0) {
+                    antiguedadInput.value = 0;
+                }
+
+                calcularSalario();
+            }
+
+            reduccionJornadaSelect.addEventListener('change', updateExtrasFields);
+            contratoPracticasSelect.addEventListener('change', updateExtrasFields);
+
+            // Initial call to set the correct state
+            updateExtrasFields();
+        });
     </script>
 </body>
 </html>
