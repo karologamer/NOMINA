@@ -20,6 +20,19 @@
             background-attachment: fixed;
             min-height: 100vh;
             color: #333;
+            opacity: 0;
+            animation: fadeIn 1.2s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header-image {
@@ -27,11 +40,13 @@
             height: auto;
             object-fit: cover;
             display: block;
-            max-width: 100vw;
+            max-width: 760px; /* Reducido de 800px */
+            margin: 15px auto 0;
+            border-radius: 8px 8px 0 0;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 760px; /* Reducido de 800px */
             margin: 0 auto;
             padding: 20px;
         }
@@ -42,6 +57,20 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .form-group {
@@ -65,6 +94,8 @@
         .tabs {
             display: flex;
             margin-bottom: 1rem;
+            animation: fadeIn 1s ease-in forwards 0.5s;
+            opacity: 0;
         }
 
         .tab {
@@ -75,6 +106,7 @@
             cursor: pointer;
             border: none;
             font-weight: 500;
+            transition: all 0.3s ease;
         }
 
         .tab.active {
@@ -88,6 +120,7 @@
 
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.5s ease-in forwards;
         }
 
         .result-item {
@@ -102,30 +135,20 @@
             font-size: 1.125rem;
         }
 
-        .whatsapp-button {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            background-color: #25D366;
-            color: white;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 8px;
-            font-weight: bold;
-            margin-top: 2rem;
-            transition: background-color 0.2s;
-        }
-
-        .whatsapp-button:hover {
-            background-color: #128C7E;
-        }
-
         .footer-info {
             font-size: 0.8rem;
             text-align: center;
             margin-top: 2rem;
             color: #666;
+            animation: fadeIn 1s ease-in forwards 1s;
+            opacity: 0;
         }
+        
+        /* Aplicar animaciones a las cards con retraso */
+        .card:nth-child(1) { animation-delay: 0.2s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.6s; }
+        .card:nth-child(4) { animation-delay: 0.8s; }
     </style>
 </head>
 <body>
@@ -231,11 +254,8 @@
             </div>
         </div>
 
-        <a href="https://whatsapp.com/channel/0029Vb3xmeq3mFXzDc4jfk2D" class="whatsapp-button" target="_blank">
-            CANALES
-        </a>
         <div class="footer-info">
-            <p>App Versión 1.2</p>
+            <p>App Versión 1.3</p>
             <p>Esta APP aplica Convenio Colectivo y Estatuto del trabajador a 09-02-2025.</p>
         </div>
     </div>
@@ -351,11 +371,14 @@
                 extrasPorHorasExtras = valorMinutoExtra * horasExtras;
             }
 
-            // Nueva fórmula para horas nocturnas
+            // Fórmula corregida para horas nocturnas (10% de la jornada ordinaria)
             let extrasPorHorasNocturnas = 0;
             if (!contratoPracticas) {
+                // Cálculo del valor de la hora ordinaria
                 const baseCalculo = ((salarioBaseReducido * (1 + porcentajeAntiguedad/100)) + plusConvenioReducido + plusTransporte);
-                const valorMinutoNocturno = (((baseCalculo * 15) / 1776) / 60) * 0.10;
+                const valorHoraOrdinaria = (baseCalculo * 15) / 1776;
+                // 10% del valor de la hora ordinaria por minuto
+                const valorMinutoNocturno = (valorHoraOrdinaria / 60) * 0.10;
                 extrasPorHorasNocturnas = valorMinutoNocturno * horasNocturnas;
             }
 
@@ -383,7 +406,7 @@
             const contingenciasComunes = baseRetenciones * 0.0470;
             const mei = baseRetenciones * 0.0013;
             const formacion = baseRetenciones * 0.0010;
-            const desempleo = baseRetenciones * 0.0155; // Update here
+            const desempleo = baseRetenciones * 0.0155;
             const retencionIRPF = totalBruto * (irpf / 100);
 
             const totalRetenciones = contingenciasComunes + mei + formacion + desempleo + retencionIRPF;
@@ -407,7 +430,7 @@
                 <div class="result-item">Contingencias Comunes (4.70%): ${contingenciasComunes.toFixed(2)} €</div>
                 <div class="result-item">M.E.I (0.13%): ${mei.toFixed(2)} €</div>
                 <div class="result-item">Formación (0.10%): ${formacion.toFixed(2)} €</div>
-                <div class="result-item">Desempleo (1.55%): ${desempleo.toFixed(2)} €</div>  <!-- Update here -->
+                <div class="result-item">Desempleo (1.55%): ${desempleo.toFixed(2)} €</div>
                 <div class="result-item">IRPF (${irpf}%): ${retencionIRPF.toFixed(2)} €</div>
                 <div class="total">Total Retenciones: ${totalRetenciones.toFixed(2)} €</div>
                 <div class="total">Total Neto: ${totalNeto.toFixed(2)} €</div>
@@ -450,8 +473,20 @@
 
             // Initial call to set the correct state
             updateExtrasFields();
+            
+            // Mostrar un mensaje de bienvenida
+            setTimeout(function() {
+                const resultados = document.getElementById('resultados');
+                if (!resultados.innerHTML.trim()) {
+                    resultados.innerHTML = '<div class="result-item" style="text-align: center; padding: 10px;">Selecciona un grupo profesional y un puesto para calcular tu nómina</div>';
+                }
+                
+                const retenciones = document.getElementById('retenciones');
+                if (!retenciones.innerHTML.trim()) {
+                    retenciones.innerHTML = '<div class="result-item" style="text-align: center; padding: 10px;">Las retenciones se mostrarán aquí</div>';
+                }
+            }, 1000);
         });
     </script>
 </body>
 </html>
-
